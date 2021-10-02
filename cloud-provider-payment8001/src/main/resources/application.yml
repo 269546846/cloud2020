@@ -20,7 +20,7 @@ eureka:
     #false表示不向注册中心注册自己
     register-with-eureka: true
     #是否从EurekaServer抓取已有的注册新选 默认是true,单节点无所谓，集群必须设置为ture配合
-    fetch-registry: false
+    fetch-registry: true
     #设置与Eureka Server交互的地址查询服务和注册服务都需要依赖这个地址
     service-url:
       #单机注册

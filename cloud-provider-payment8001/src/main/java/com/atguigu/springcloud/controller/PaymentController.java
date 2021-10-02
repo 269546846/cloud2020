@@ -5,6 +5,7 @@ import com.atguigu.springcloud.entities.CommonResult;
 import com.atguigu.springcloud.entities.Payment;
 import com.atguigu.springcloud.service.PaymentService;
 
+import com.mysql.jdbc.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
@@ -12,6 +13,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description:
@@ -44,7 +46,7 @@ public class PaymentController {
     }
 
     @GetMapping("/get/{id}")
-    public CommonResult get(@PathVariable("id") Long id){
+    public CommonResult getPaymentById(@PathVariable("id") Long id){
         Payment payment=paymentService.getPaymentById(id);
         log.info("********查询数据结果："+payment);
         if(payment!=null)
@@ -61,11 +63,33 @@ public class PaymentController {
             log.info("******element*****:" + element);
         }
 
-        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
+        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PROVIDER-PAYMENT");
         for(ServiceInstance instance:instances) {
             log.info(instance.getServiceId()+"\t"+instance.getHost()+"\t"+instance.getPort()+"\t"+instance.getUri()+"\t");
         }
 
         return this.discoveryClient;
+    }
+
+    /**
+    * @Description:
+    * @Param:
+    * @return:  测试使用自定义负载均衡算法
+    * @Author: wqw
+    * @Date: 14:04 2021/7/24
+    */
+    @GetMapping("/lb")
+    public String getPaymentLB(){
+        return serverPort;
+    }
+
+    @GetMapping("/feign/timeout")
+    public String paymentFeignTimeOut(){
+        try{
+            TimeUnit.SECONDS.sleep(3);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        return serverPort;
     }
 }
