@@ -1,0 +1,35 @@
+server:
+  port: 9527
+
+
+spring:
+  application:
+    name: cloud-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # \u5F00\u542F\u4ECE\u6CE8\u518C\u4E2D\u5FC3\u52A8\u6001\u521B\u5EFA\u8DEF\u7531\u7684\u529F\u80FD\uFF0C\u5229\u7528\u5FAE\u670D\u52A1\u540D\u79F0j\u8FDB\u884C\u8DEF\u7531
+      routes:
+        - id: payment_route # \u8DEF\u7531\u7684id,\u6CA1\u6709\u89C4\u5B9A\u89C4\u5219\u4F46\u8981\u6C42\u552F\u4E00,\u5EFA\u8BAE\u914D\u5408\u670D\u52A1\u540D
+          #\u5339\u914D\u540E\u63D0\u4F9B\u670D\u52A1\u7684\u8DEF\u7531\u5730\u5740
+#          uri: http://localhost:8001
+          uri: lb://cloud-provider-payment
+          predicates:
+            - Path=/payment/get/** # \u65AD\u8A00\uFF0C\u8DEF\u5F84\u76F8\u5339\u914D\u7684\u8FDB\u884C\u8DEF\u7531
+        - id: payment_route2
+#          uri: http://localhost:8001
+          uri: lb://cloud-provider-payment
+          predicates:
+            - Path=/payment/lb/** #\u65AD\u8A00,\u8DEF\u5F84\u76F8\u5339\u914D\u7684\u8FDB\u884C\u8DEF\u7531
+            - Cookie=username,zzyy
+
+
+eureka:
+  instance:
+    hostname: cloud-gateway
+  client: #\u670D\u52A1\u63D0\u4F9B\u8005provider\u6CE8\u518C\u8FDBeureka\u670D\u52A1\u5217\u8868
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka7001.com:7001/eureka/
